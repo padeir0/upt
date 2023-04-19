@@ -34,8 +34,10 @@ func Parse(filename string, contents string) (*mod.Node, *Error) {
 
 // Portugol := {Funcao}.
 func portugol(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "portugol")
 	funcs, err := repeat(l, funcao)
 	if err != nil {
+		return nil, err
 	}
 	return &mod.Node{
 		Leaves: funcs,
@@ -45,6 +47,10 @@ func portugol(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Funcao := [tipo] ident '(' [ArgList] ')' Bloco.
 func funcao(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "funcao")
+	if !(isType(l.Word) || l.Word.Kind == lk.Ident) {
+		return nil, nil
+	}
 	var retNode *mod.Node
 	var err *Error
 
@@ -76,6 +82,9 @@ func funcao(l *lxr.Lexer) (*mod.Node, *Error) {
 		return nil, err
 	}
 	bl, err := expectProd(l, bloco, "bloco")
+	if err != nil {
+		return nil, err
+	}
 
 	return &mod.Node{
 		Leaves: []*mod.Node{id, args, retNode, bl},
@@ -85,6 +94,7 @@ func funcao(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // ArgList := Arg {',' Arg}.
 func argList(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "argList")
 	arglist, err := repeatCommaList(l, arg)
 	if err != nil {
 		return nil, err
@@ -97,6 +107,7 @@ func argList(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Arg := tipo ident.
 func arg(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "arg")
 	tipo, err := expect(l, lk.Real, lk.Inteiro, lk.Caractere)
 	if err != nil {
 		return nil, err
@@ -113,7 +124,16 @@ func arg(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Bloco := '{' {Comando} '}'.
 func bloco(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "bloco")
+	_, err := expect(l, lk.LeftBrace)
+	if err != nil {
+		return nil, err
+	}
 	comandos, err := repeat(l, comando)
+	if err != nil {
+		return nil, err
+	}
+	_, err = expect(l, lk.RightBrace)
 	if err != nil {
 		return nil, err
 	}
@@ -134,6 +154,7 @@ Comando := Atrib term
          | Para.
 */
 func comando(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "comando")
 	switch l.Word.Kind {
 	case lk.Leia:
 		n, err := leia(l)
@@ -161,6 +182,16 @@ func comando(l *lxr.Lexer) (*mod.Node, *Error) {
 		return enquanto(l)
 	case lk.Para:
 		return para(l)
+	case lk.Retorne:
+		n, err := retorne(l)
+		if err != nil {
+			return nil, err
+		}
+		_, err = expect(l, lk.Semicolon)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case lk.Caractere, lk.Real, lk.Inteiro:
 		n, err := varDecl(l)
 		if err != nil {
@@ -184,9 +215,25 @@ func comando(l *lxr.Lexer) (*mod.Node, *Error) {
 	return expr(l)
 }
 
+// Retorne := "retorne" Expr.
+func retorne(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "retorne")
+	kw, err := expect(l, lk.Retorne)
+	if err != nil {
+		return nil, err
+	}
+	exp, err := expectProd(l, expr, "expressão")
+	if err != nil {
+		return nil, err
+	}
+	kw.Leaves = []*mod.Node{exp}
+	return kw, nil
+}
+
 // Expr := AndExpr {'ou' AndExpr}.
 func expr(l *lxr.Lexer) (*mod.Node, *Error) {
-	return repeatBinary(l, andExpr, "expression", isOu)
+	lxr.Track(l, "expr")
+	return repeatBinary(l, andExpr, "expressão", isOu)
 }
 
 func isOu(l *lex.Lexeme) bool {
@@ -195,7 +242,8 @@ func isOu(l *lex.Lexeme) bool {
 
 // AndExpr := CondExpr {'e' CondExpr}.
 func andExpr(l *lxr.Lexer) (*mod.Node, *Error) {
-	return repeatBinary(l, compExpr, "expression", isE)
+	lxr.Track(l, "andExpr")
+	return repeatBinary(l, compExpr, "expressão", isE)
 }
 
 func isE(l *lex.Lexeme) bool {
@@ -204,7 +252,8 @@ func isE(l *lex.Lexeme) bool {
 
 // CondExpr := AddExpr {compOp AddExpr}.
 func compExpr(l *lxr.Lexer) (*mod.Node, *Error) {
-	return repeatBinary(l, addExpr, "expression", isCompOp)
+	lxr.Track(l, "compExpr")
+	return repeatBinary(l, addExpr, "expressão", isCompOp)
 }
 
 func isCompOp(l *lex.Lexeme) bool {
@@ -217,7 +266,8 @@ func isCompOp(l *lex.Lexeme) bool {
 
 // AddExpr := MultExpr {addOp MultExpr}.
 func addExpr(l *lxr.Lexer) (*mod.Node, *Error) {
-	return repeatBinary(l, multExpr, "expression", isAddOp)
+	lxr.Track(l, "addExpr")
+	return repeatBinary(l, multExpr, "expressão", isAddOp)
 }
 
 func isAddOp(l *lex.Lexeme) bool {
@@ -230,7 +280,8 @@ func isAddOp(l *lex.Lexeme) bool {
 
 // MultExpr := Unary {multOp Unary}.
 func multExpr(l *lxr.Lexer) (*mod.Node, *Error) {
-	return repeatBinary(l, unary, "expression", isMultOp)
+	lxr.Track(l, "multExpr")
+	return repeatBinary(l, unary, "expressão unaria", isMultOp)
 }
 
 func isMultOp(l *lex.Lexeme) bool {
@@ -243,6 +294,7 @@ func isMultOp(l *lex.Lexeme) bool {
 
 // Unary := [unaryOp] Termo [Call].
 func unary(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "unary")
 	var op *mod.Node
 	var err *Error
 	if isUnaryOp(l.Word) {
@@ -281,6 +333,7 @@ func unary(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Call := '(' [ExprList] ')'
 func call(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "call")
 	_, err := expect(l, lk.LeftParen)
 	if err != nil {
 		return nil, err
@@ -304,6 +357,7 @@ Termo := literalInteiro
        | '(' Expr ')'.
 */
 func termo(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "termo")
 	switch l.Word.Kind {
 	case lk.IntLit, lk.RealLit, lk.CharLit, lk.Ident:
 		return consume(l)
@@ -312,7 +366,7 @@ func termo(l *lxr.Lexer) (*mod.Node, *Error) {
 		if err != nil {
 			return nil, err
 		}
-		exp, err := expectProd(l, expr, "expression")
+		exp, err := expectProd(l, expr, "expressão")
 		_, err = expect(l, lk.RightParen)
 		if err != nil {
 			return nil, err
@@ -332,6 +386,7 @@ func isUnaryOp(l *lex.Lexeme) bool {
 
 // Atrib := ident "=" Expr.
 func atrib(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "atrib")
 	id, err := expect(l, lk.Ident)
 	if err != nil {
 		return nil, err
@@ -350,6 +405,7 @@ func atrib(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Enquanto := 'enquanto' '(' Expr ')' Bloco.
 func enquanto(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "enquanto")
 	kw, err := expect(l, lk.Enquanto)
 	if err != nil {
 		return nil, err
@@ -376,6 +432,7 @@ func enquanto(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Para := 'para' '(' Atrib term Expr term Atrib ')' Bloco.
 func para(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "para")
 	kw, err := expect(l, lk.Para)
 	if err != nil {
 		return nil, err
@@ -418,7 +475,8 @@ func para(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Imprima := 'imprima' '(' ImpArg ')'.
 func imprima(l *lxr.Lexer) (*mod.Node, *Error) {
-	kw, err := expect(l, lk.Leia)
+	lxr.Track(l, "imprima")
+	kw, err := expect(l, lk.Imprima)
 	if err != nil {
 		return nil, err
 	}
@@ -440,6 +498,7 @@ func imprima(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // ImpArg := mensagem | Expr.
 func impArg(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "imparg")
 	if l.Word.Kind == lk.StringLit {
 		return consume(l)
 	}
@@ -448,6 +507,7 @@ func impArg(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Leia := 'leia' '(' ident ')'.
 func leia(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "leia")
 	kw, err := expect(l, lk.Leia)
 	if err != nil {
 		return nil, err
@@ -470,6 +530,7 @@ func leia(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Se := 'se' '(' Expr ')' Bloco [Senao].
 func se(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "se")
 	kw, err := expect(l, lk.Se)
 	if err != nil {
 		return nil, err
@@ -504,6 +565,7 @@ func se(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // Senao := 'senao' Bloco.
 func senao(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "senao")
 	_, err := expect(l, lk.Senao)
 	if err != nil {
 		return nil, err
@@ -513,6 +575,7 @@ func senao(l *lxr.Lexer) (*mod.Node, *Error) {
 
 // VarDecl := tipo Idlist.
 func varDecl(l *lxr.Lexer) (*mod.Node, *Error) {
+	lxr.Track(l, "varDecl")
 	t, err := expectType(l)
 	if err != nil {
 		return nil, err

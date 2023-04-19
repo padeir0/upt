@@ -37,6 +37,7 @@ const (
 
 	Assign
 
+	Retorne
 	Para
 	Enquanto
 	Se
@@ -83,6 +84,7 @@ var mapToString = map[LexKind]string{
 
 	Assign: "=",
 
+	Retorne:   "retorne",
 	Para:      "para",
 	Enquanto:  "enquanto",
 	Se:        "se",

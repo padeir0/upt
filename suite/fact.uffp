@@ -1,0 +1,10 @@
+inteiro fact(inteiro a) {
+	se (a == 0)
+	{
+		retorne 1;
+	}
+	senao
+	{
+		retorne a * fact(a - 1);
+	}
+}

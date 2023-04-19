@@ -281,6 +281,7 @@ func any(st *Lexer) (*lx.Lexeme, *Error) {
 		nextRune(st)
 		tp = T.Minus
 	case '*':
+		nextRune(st)
 		tp = T.Star
 	case '>': // >  >=
 		nextRune(st)
@@ -406,6 +407,8 @@ func identifier(st *Lexer) *lx.Lexeme {
 	selected := st.Selected()
 	tp := T.Ident
 	switch selected {
+	case "retorne":
+		tp = T.Retorne
 	case "para":
 		tp = T.Para
 	case "enquanto":
@@ -424,6 +427,12 @@ func identifier(st *Lexer) *lx.Lexeme {
 		tp = T.Imprima
 	case "leia":
 		tp = T.Leia
+	case "ou":
+		tp = T.Ou
+	case "e":
+		tp = T.E
+	case "nao":
+		tp = T.Nao
 	}
 	return genNode(st, tp)
 }

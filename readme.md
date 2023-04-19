@@ -41,7 +41,7 @@ como nomes de simbolos na linguagem.
 ```
 inteiro    real      caractere
 para       enquanto  se    senao
-imprima    leia
+imprima    leia      ou    e    nao
 ```
 
 ### Operadores e pontuação <a name="operadoresepontuacao"/>
@@ -97,7 +97,10 @@ Comando := Atrib term
          | Imprima term
          | Se
          | Enquanto
-         | Para.
+         | Para
+         | Retorno term.
+
+Retorno := 'retorno' Expr.
 
 Leia := 'leia' '(' ident ')'.
 Imprima := 'imprima' '(' ImpArg ')'.

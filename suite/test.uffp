@@ -1,0 +1,3 @@
+inteiro mano() {
+	imprima("Ola, imundo!\n");
+}
