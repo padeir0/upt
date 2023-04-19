@@ -1,5 +1,14 @@
 # UFF Portugol Transpiler
 
+Work in Progress:
+
+ [x] Spec
+ [x] Lexer
+ [x] Parser
+ [ ] Name Resolution
+ [ ] TypeChecking
+ [ ] C Generation
+
 Transpila UFF Portugol pra C, e compila usando `gcc`.
 O resto desse documento é a especificação da linguagem.
 
