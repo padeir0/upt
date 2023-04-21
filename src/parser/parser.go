@@ -157,25 +157,9 @@ func comando(l *lxr.Lexer) (*mod.Node, *Error) {
 	lxr.Track(l, "comando")
 	switch l.Word.Kind {
 	case lk.Leia:
-		n, err := leia(l)
-		if err != nil {
-			return nil, err
-		}
-		_, err = expect(l, lk.Semicolon)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
+		return prodSemicolon(l, leia)
 	case lk.Imprima:
-		n, err := imprima(l)
-		if err != nil {
-			return nil, err
-		}
-		_, err = expect(l, lk.Semicolon)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
+		return prodSemicolon(l, imprima)
 	case lk.Se:
 		return se(l)
 	case lk.Enquanto:
@@ -183,25 +167,9 @@ func comando(l *lxr.Lexer) (*mod.Node, *Error) {
 	case lk.Para:
 		return para(l)
 	case lk.Retorne:
-		n, err := retorne(l)
-		if err != nil {
-			return nil, err
-		}
-		_, err = expect(l, lk.Semicolon)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
+		return prodSemicolon(l, retorne)
 	case lk.Caractere, lk.Real, lk.Inteiro:
-		n, err := varDecl(l)
-		if err != nil {
-			return nil, err
-		}
-		_, err = expect(l, lk.Semicolon)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
+		return prodSemicolon(l, varDecl)
 	}
 	if l.Word.Kind == lk.Ident {
 		peeked, err := l.Peek()
@@ -209,10 +177,24 @@ func comando(l *lxr.Lexer) (*mod.Node, *Error) {
 			return nil, err
 		}
 		if peeked.Kind == lk.Assign {
-			return atrib(l)
+			return prodSemicolon(l, atrib)
 		}
 	}
-	return expr(l)
+	return prodSemicolon(l, expr)
+}
+
+func prodSemicolon(l *lxr.Lexer, prod production) (*mod.Node, *Error) {
+	n, err := prod(l)
+	if err != nil {
+		return nil, err
+	}
+	if n != nil {
+		_, err = expect(l, lk.Semicolon)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return n, nil
 }
 
 // Retorne := "retorne" Expr.
@@ -586,7 +568,7 @@ func varDecl(l *lxr.Lexer) (*mod.Node, *Error) {
 	idlist, err := repeatCommaList(l, ident)
 	return &mod.Node{
 		Leaves: append([]*mod.Node{t}, idlist...),
-		Kind:   nk.VarList,
+		Kind:   nk.VarDecl,
 	}, nil
 }
 

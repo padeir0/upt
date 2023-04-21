@@ -8,6 +8,8 @@ import (
 	lk "upt/core/lexeme/lexkind"
 	nk "upt/core/module/nodekind"
 	sk "upt/core/module/symbolkind"
+
+	"fmt"
 )
 
 func Resolve(fullpath string, root *mod.Node) (*mod.Module, *Error) {
@@ -169,11 +171,11 @@ func resolveCmd(ctx *context, scope *mod.Scope, n *mod.Node) *Error {
 			return resolveRetorne(ctx, scope, n)
 		case lk.Assign:
 			return resolveAtrib(ctx, scope, n)
-		case lk.Caractere, lk.Real, lk.Inteiro:
-			return resolveVarDecl(ctx, scope, n)
 		}
 	case nk.Block:
 		return resolveBlock(ctx, scope, n)
+	case nk.VarDecl:
+		return resolveVarDecl(ctx, scope, n)
 	}
 	return resolveExpr(ctx, scope, n)
 }
@@ -325,6 +327,7 @@ func resolveExpr(ctx *context, scope *mod.Scope, n *mod.Node) *Error {
 		}
 		return nil
 	}
+	fmt.Println(n)
 	panic("unreachable")
 }
 

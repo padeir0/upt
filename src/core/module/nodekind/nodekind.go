@@ -26,7 +26,7 @@ func (this NodeKind) String() string {
 		return "call"
 	case ExpressionList:
 		return "expression list"
-	case VarList:
+	case VarDecl:
 		return "variable list"
 	}
 	return strconv.FormatInt(int64(this), 10)
@@ -44,5 +44,5 @@ const (
 	Call
 	Block
 	ExpressionList
-	VarList
+	VarDecl
 )

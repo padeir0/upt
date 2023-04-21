@@ -134,11 +134,11 @@ func checkCmd(M *mod.Module, sy *mod.Symbol, scope *mod.Scope, n *mod.Node) *Err
 			return checkRetorne(M, sy, scope, n)
 		case lk.Assign:
 			return checkAtrib(M, scope, n)
-		case lk.Caractere, lk.Real, lk.Inteiro:
-			return checkVarDecl(M, scope, n)
 		}
 	case nk.Block:
 		return checkBlock(M, sy, scope, n)
+	case nk.VarDecl:
+		return checkVarDecl(M, scope, n)
 	}
 	return checkExpr(M, scope, n)
 }
