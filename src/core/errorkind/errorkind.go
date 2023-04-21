@@ -20,6 +20,8 @@ const (
 	ExpectedEOF
 	ExpectedSymbol
 	ExpectedProd
+	NameAlreadyDefined
+	SymbolNotDeclared
 )
 
 var ErrorCodeMap = map[ErrorKind]string{
@@ -30,4 +32,6 @@ var ErrorCodeMap = map[ErrorKind]string{
 	ExpectedEOF:           "E005",
 	ExpectedSymbol:        "E006",
 	ExpectedProd:          "E007",
+	NameAlreadyDefined:    "E008",
+	SymbolNotDeclared:     "E009",
 }

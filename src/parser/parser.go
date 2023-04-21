@@ -41,7 +41,7 @@ func portugol(l *lxr.Lexer) (*mod.Node, *Error) {
 	}
 	return &mod.Node{
 		Leaves: funcs,
-		Kind:   0,
+		Kind:   nk.Module,
 	}, nil
 }
 
@@ -316,12 +316,11 @@ func unary(l *lxr.Lexer) (*mod.Node, *Error) {
 	}
 	// preguiça de fazer precedencia
 	if c != nil {
+		c.Leaves = append([]*mod.Node{n}, c.Leaves...)
 		if op != nil {
-			op.Leaves = []*mod.Node{n}
-			c.Leaves = []*mod.Node{op}
-			return c, nil
+			op.Leaves = []*mod.Node{c}
+			return op, nil
 		}
-		c.Leaves = []*mod.Node{n}
 		return c, nil
 	}
 	if op != nil {
@@ -343,9 +342,13 @@ func call(l *lxr.Lexer) (*mod.Node, *Error) {
 	if err != nil {
 		return nil, err
 	}
-	return &mod.Node{
+	exprList := &mod.Node{
 		Leaves: exprs,
 		Kind:   nk.ExpressionList,
+	}
+	return &mod.Node{
+		Leaves: []*mod.Node{exprList},
+		Kind:   nk.Call,
 	}, nil
 }
 

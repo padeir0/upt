@@ -111,24 +111,18 @@ func NewError(M *Module, t ek.ErrorKind, n *Node, message string) *Error {
 }
 
 type Module struct {
-	BasePath string
-	Name     string
 	FullPath string
 	Root     *Node
 
 	Global *Scope
-
-	Visited bool
 }
 
 func (this *Module) String() string {
-	deps := []string{}
 	globals := []string{}
 	for name := range this.Global.Symbols {
 		globals = append(globals, name)
 	}
-	return fmt.Sprintf("%v, %v, %v\n", this.BasePath, this.Name, this.FullPath) +
-		"dependencies: " + strings.Join(deps, ", ") + "\n" +
+	return fmt.Sprintf("%v\n", this.FullPath) +
 		"globals: " + strings.Join(globals, ", ") + "\n" +
 		this.Root.String()
 }
@@ -188,7 +182,7 @@ type Symbol struct {
 
 	Builtin bool
 
-	Args map[string]Arg
+	Args []Arg // mais facil de traduzir
 }
 
 func (this *Symbol) String() string {

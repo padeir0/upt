@@ -13,7 +13,7 @@ import (
 	"upt/lexer"
 	"upt/parser"
 	"upt/resolution"
-	"upt/typechecker"
+	//"upt/typechecker"
 )
 
 // processes a single file and returns all tokens
@@ -44,15 +44,15 @@ func Mod(file string) (*mod.Module, *Error) {
 	if err != nil {
 		return nil, err
 	}
-	m, err := resolution.Resolve(ast)
+	m, err := resolution.Resolve(file, ast)
 	if err != nil {
 		return nil, err
 	}
 
-	err = typechecker.Check(m)
-	if err != nil {
-		return nil, err
-	}
+	//err = typechecker.Check(m)
+	//if err != nil {
+	//	return nil, err
+	//}
 	return m, nil
 }
 
@@ -64,11 +64,11 @@ func Compile(file string) (string, *Error) {
 		return "", err
 	}
 	str := cgen.Gen(m)
-	ioerr := genBinary(m.Name, str)
+	ioerr := genBinary("out", str)
 	if ioerr != nil {
 		return "", ProcessFileError(ioerr)
 	}
-	return m.Name, nil
+	return "out", nil
 }
 
 func genBinary(name, str string) error {
@@ -81,7 +81,7 @@ func genBinary(name, str string) error {
 	if oserr != nil {
 		return oserr
 	}
-	cmd := exec.Command("fasm", f.Name(), "./"+name)
+	cmd := exec.Command("gcc", f.Name(), "./"+name)
 	_, oserr = cmd.Output()
 	if oserr != nil {
 		return oserr
