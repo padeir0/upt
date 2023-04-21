@@ -199,7 +199,7 @@ func (this *Symbol) String() string {
 }
 
 type Arg struct {
-	T    T.Type
+	T    *T.Type
 	N    *Node
 	Name string
 	Pos  int

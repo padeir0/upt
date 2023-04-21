@@ -22,6 +22,10 @@ const (
 	ExpectedProd
 	NameAlreadyDefined
 	SymbolNotDeclared
+	TypeNotAssignable
+	InvalidTypeForCond
+	OpUnequalTypes
+	ExpectedTypeOp
 )
 
 var ErrorCodeMap = map[ErrorKind]string{
@@ -34,4 +38,8 @@ var ErrorCodeMap = map[ErrorKind]string{
 	ExpectedProd:          "E007",
 	NameAlreadyDefined:    "E008",
 	SymbolNotDeclared:     "E009",
+	TypeNotAssignable:     "E010",
+	InvalidTypeForCond:    "E011",
+	OpUnequalTypes:        "E012",
+	ExpectedTypeOp:        "E013",
 }

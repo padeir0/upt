@@ -130,6 +130,7 @@ func resolveProcScopes(ctx *context, sy *mod.Symbol) *Error {
 			}
 		}
 	}
+	sy.Args = argMap
 	bl := sy.N.Leaves[3]
 	err := resolveBlock(ctx, argScope, bl)
 	if err != nil {
@@ -242,9 +243,11 @@ func resolveSe(ctx *context, scope *mod.Scope, n *mod.Node) *Error {
 	}
 
 	senao := n.Leaves[2]
-	err = resolveBlock(ctx, scope, senao)
-	if err != nil {
-		return err
+	if senao != nil {
+		err = resolveBlock(ctx, scope, senao)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

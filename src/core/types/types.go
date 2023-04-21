@@ -22,6 +22,8 @@ func (t *Type) String() string {
 		return "caractere"
 	case Void:
 		return "void"
+	case String:
+		return "string"
 	}
 	if t.Proc != nil {
 		return t.Proc.String()
@@ -51,6 +53,7 @@ const (
 	Real
 	Inteiro
 	Caractere
+	String
 
 	Void
 )
@@ -99,16 +102,16 @@ var T_Inteiro = &Type{Basic: Inteiro}
 var T_Real = &Type{Basic: Real}
 var T_Void = &Type{Basic: Void}
 var T_Caractere = &Type{Basic: Caractere}
+var T_String = &Type{Basic: String}
 
-var T_Sqrt = &Type{
-	Proc: &ProcType{
-		Args: []*Type{T_Real},
-		Ret:  T_Real,
-	},
-}
-var T_Pow = &Type{
-	Proc: &ProcType{
-		Args: []*Type{T_Real, T_Real},
-		Ret:  T_Real,
-	},
+var T_Sqrt = NewProcType([]*Type{T_Real}, T_Real)
+var T_Pow = NewProcType([]*Type{T_Real, T_Real}, T_Real)
+
+func NewProcType(args []*Type, ret *Type) *Type {
+	return &Type{
+		Proc: &ProcType{
+			Args: args,
+			Ret:  ret,
+		},
+	}
 }

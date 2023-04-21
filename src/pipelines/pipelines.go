@@ -13,7 +13,7 @@ import (
 	"upt/lexer"
 	"upt/parser"
 	"upt/resolution"
-	//"upt/typechecker"
+	"upt/typechecker"
 )
 
 // processes a single file and returns all tokens
@@ -49,10 +49,10 @@ func Mod(file string) (*mod.Module, *Error) {
 		return nil, err
 	}
 
-	//err = typechecker.Check(m)
-	//if err != nil {
-	//	return nil, err
-	//}
+	err = typechecker.Check(m)
+	if err != nil {
+		return nil, err
+	}
 	return m, nil
 }
 

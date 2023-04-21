@@ -41,7 +41,7 @@ func PartialTest(file string) TestResult {
 	defer recoverIfFatal(file)
 	expectedErr := extractError(file)
 
-	_, err := pipelines.Ast(file)
+	_, err := pipelines.Mod(file)
 
 	if err != nil {
 		if err.Code == et.InternalCompilerError {
