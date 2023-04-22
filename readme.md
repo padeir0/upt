@@ -1,4 +1,4 @@
-# UFF Portugol Transpiler
+# UFF Portugol Tools
 
 Work in Progress:
 
@@ -15,7 +15,7 @@ Work in Progress:
  - [ ] LSP server and client
  - [ ] Highlighting
 
-Transpila UFF Portugol pra C, e compila usando `gcc`.
+Implementa ferramentas para o Portugol da UFF.
 O resto desse documento é a especificação da linguagem.
 
 ## Sumário
@@ -118,9 +118,9 @@ Comando := Atrib term
          | Se
          | Enquanto
          | Para
-         | Retorno term.
+         | Retorne term.
 
-Retorno := 'retorno' Expr.
+Retorne := 'retorne' Expr.
 
 Leia := 'leia' '(' ident ')'.
 Imprima := 'imprima' '(' ImpArg ')'.
