@@ -12,9 +12,10 @@ import (
 	"strings"
 )
 
-var lexemes = flag.Bool("lex", false, "runs the lexer and prints the tokens")
-var ast = flag.Bool("ast", false, "runs the lexer and parser, prints AST output")
-var mod = flag.Bool("mod", false, "runs the resolution, prints Module output")
+var lexemes = flag.Bool("lex", false, "prints the tokens")
+var ast = flag.Bool("ast", false, "prints AST output")
+var mod = flag.Bool("mod", false, "prints Typed AST output")
+var C = flag.Bool("C", false, "prints C code")
 
 var test = flag.Bool("test", false, "runs tests for all files in a folder,")
 
@@ -57,6 +58,10 @@ func normalMode(filename string) {
 		m, err := pipelines.Mod(filename)
 		Check(err)
 		fmt.Println(m.String())
+	case *C:
+		str, err := pipelines.GenC(filename)
+		Check(err)
+		fmt.Println(str)
 	default:
 		_, err := pipelines.Compile(filename)
 		Check(err)
@@ -64,7 +69,7 @@ func normalMode(filename string) {
 }
 
 func checkValid() {
-	var selected = []bool{*lexemes, *ast, *mod}
+	var selected = []bool{*lexemes, *ast, *mod, *C}
 	var count = 0
 	for _, b := range selected {
 		if b {
@@ -72,7 +77,7 @@ func checkValid() {
 		}
 	}
 	if count > 1 {
-		Fatal("only one of lex, ast, mod or typedmod flags may be used at a time")
+		Fatal("escolha apenas uma das seguintes flags: lex, ast, mod ou C")
 	}
 }
 

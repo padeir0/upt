@@ -37,6 +37,7 @@ func Ast(file string) (*mod.Node, *Error) {
 	return parser.Parse(file, s)
 }
 
+// TODO: REQ: generate CFG and do termination checking on procedures
 // processes a file and all it's dependencies
 // returns a typed Module or an error
 func Mod(file string) (*mod.Module, *Error) {
@@ -56,8 +57,15 @@ func Mod(file string) (*mod.Module, *Error) {
 	return m, nil
 }
 
-// processes a Millipascal program and saves a binary
-// into disk
+func GenC(file string) (string, *Error) {
+	m, err := Mod(file)
+	if err != nil {
+		return "", err
+	}
+	str := cgen.Gen(m)
+	return str, nil
+}
+
 func Compile(file string) (string, *Error) {
 	m, err := Mod(file)
 	if err != nil {
@@ -72,7 +80,7 @@ func Compile(file string) (string, *Error) {
 }
 
 func genBinary(name, str string) error {
-	f, oserr := os.CreateTemp("", "mpc_*")
+	f, oserr := os.CreateTemp("", "upt_*")
 	if oserr != nil {
 		return oserr
 	}

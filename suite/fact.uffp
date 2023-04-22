@@ -1,3 +1,16 @@
+inteiro entrada() {
+	se (fact(2) != 2) {
+		retorne 1;
+	}
+	se (fact(3) != 6) {
+		retorne 1;
+	}
+	se (fact(4) != 24) {
+		retorne 1;
+	}
+	retorne 0;
+}
+
 inteiro fact(inteiro a) {
 	se (a == 0)
 	{

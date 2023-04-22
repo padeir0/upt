@@ -26,6 +26,9 @@ const (
 	InvalidTypeForCond
 	OpUnequalTypes
 	ExpectedTypeOp
+	InvalidFileName
+	NoEntryPoint
+	WrongEntryType
 )
 
 var ErrorCodeMap = map[ErrorKind]string{
@@ -42,4 +45,7 @@ var ErrorCodeMap = map[ErrorKind]string{
 	InvalidTypeForCond:    "E011",
 	OpUnequalTypes:        "E012",
 	ExpectedTypeOp:        "E013",
+	InvalidFileName:       "E014",
+	NoEntryPoint:          "E015",
+	WrongEntryType:        "E016",
 }

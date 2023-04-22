@@ -17,6 +17,10 @@ func Check(M *mod.Module) *Error {
 	if err != nil {
 		return err
 	}
+	sy := M.Global.Find("entrada")
+	if !sy.Type.Equals(T.T_Entrada) {
+		return errorWrongEntryType(M, sy.N)
+	}
 
 	err = checkInnerScopes(M)
 	if err != nil {
@@ -250,6 +254,7 @@ func checkVarDecl(M *mod.Module, scope *mod.Scope, n *mod.Node) *Error {
 	// vardecl := {type, id...}
 	tNode := n.Leaves[0]
 	t := t2T(tNode)
+	tNode.T = t
 	for _, id := range n.Leaves[1:] {
 		name := id.Lexeme.Text
 		sy := scope.Symbols[name]
@@ -458,4 +463,9 @@ func errorExpectedProc(M *mod.Module, n *mod.Node) *Error {
 	proc := colors.MakeBlue("procedimento")
 	msg := "esperado " + proc + " não " + hasStr
 	return mod.NewError(M, ek.ExpectedTypeOp, n, msg)
+}
+
+func errorWrongEntryType(M *mod.Module, n *mod.Node) *Error {
+	msg := "o procedimento de entrada deve receber zero argumentos e retornar um inteiro"
+	return mod.NewError(M, ek.WrongEntryType, n, msg)
 }

@@ -2,12 +2,18 @@
 
 Work in Progress:
 
- [x] Spec
- [x] Lexer
- [x] Parser
- [ ] Name Resolution
- [ ] TypeChecking
- [ ] C Generation
+ - [x] Spec
+ - [x] Lexer
+ - [x] Parser
+ - [x] Name Resolution
+ - [x] TypeChecking
+ - [x] C Generation
+ - [ ] IR Generation
+ - [ ] Termination checking
+ - [ ] IR Interpreter
+ - [ ] Debugger
+ - [ ] LSP server and client
+ - [ ] Highlighting
 
 Transpila UFF Portugol pra C, e compila usando `gcc`.
 O resto desse documento é a especificação da linguagem.
@@ -20,7 +26,7 @@ O resto desse documento é a especificação da linguagem.
     3.  [Palavras Chave](#palavraschave)
     4.  [Operadores e Pontuação](#operadoresepontuacao)
     5.  [Literais](#literais)
-    6.  [Comentarios](#comentarios)
+    6.  [Comentários](#comentarios)
 2. [Elementos Gramaticais](#elementosgramaticais)
 3. [Funções embutidas](#funcoesembutidas)
 4. [Tipos](#tipos)
@@ -83,6 +89,11 @@ e `0.1` é apenas um número real.
 
 A diferenciação entre `literalInteiro` e `literalReal` requer lookahead arbitrario,
 mas pode ser resolvida com um truque no lexer.
+
+### Comentários <a name="comentarios"/>
+
+Comentários começam com `#` e terminam com uma quebra de linha.
+Eles são desconsiderados durante a compilação.
 
 ## Elementos Gramaticais <a name="elementosgramaticais"/>
 

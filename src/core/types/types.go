@@ -106,6 +106,7 @@ var T_String = &Type{Basic: String}
 
 var T_Sqrt = NewProcType([]*Type{T_Real}, T_Real)
 var T_Pow = NewProcType([]*Type{T_Real, T_Real}, T_Real)
+var T_Entrada = NewProcType([]*Type{}, T_Inteiro)
 
 func NewProcType(args []*Type, ret *Type) *Type {
 	return &Type{

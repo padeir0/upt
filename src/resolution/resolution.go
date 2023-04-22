@@ -3,19 +3,26 @@ package resolution
 import (
 	. "upt/core"
 	mod "upt/core/module"
+	lexer "upt/lexer"
 
 	ek "upt/core/errorkind"
 	lk "upt/core/lexeme/lexkind"
 	nk "upt/core/module/nodekind"
 	sk "upt/core/module/symbolkind"
+	sv "upt/core/severity"
 
 	"fmt"
+	"strings"
 )
 
 func Resolve(fullpath string, root *mod.Node) (*mod.Module, *Error) {
-	ctx := newCtx(fullpath, root)
+	name, err := extractName(fullpath)
+	if err != nil {
+		return nil, err
+	}
+	ctx := newCtx(fullpath, name, root)
 
-	err := declareGlobals(ctx, root)
+	err = declareGlobals(ctx, root)
 	if err != nil {
 		return nil, err
 	}
@@ -23,6 +30,11 @@ func Resolve(fullpath string, root *mod.Node) (*mod.Module, *Error) {
 	err = resolveInnerScopes(ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	sy := ctx.M.Global.Find("entrada")
+	if sy == nil {
+		return nil, errorEntryPointNotFound(ctx.M)
 	}
 
 	return ctx.M, nil
@@ -54,15 +66,29 @@ func resolveInnerScopes(ctx *context) *Error {
 	return nil
 }
 
+func extractName(filePath string) (string, *Error) {
+	path := strings.Split(filePath, "/")
+	name := strings.Split(path[len(path)-1], ".")
+	if lexer.IsValidIdentifier(name[0]) {
+		return name[0], nil
+	}
+	return "", &Error{
+		Code:     ek.InvalidFileName,
+		Severity: sv.Error,
+		Message:  filePath + " : " + name[0],
+	}
+}
+
 type context struct {
 	M            *mod.Module
 	ScopeCounter int
 }
 
-func newCtx(fullpath string, root *mod.Node) *context {
+func newCtx(fullpath, name string, root *mod.Node) *context {
 	return &context{
 		M: &mod.Module{
 			FullPath: fullpath,
+			Name:     name,
 			Root:     root,
 			Global: &mod.Scope{
 				ID:      0,
@@ -350,4 +376,12 @@ func errorNameAlreadyDefined(M *mod.Module, newName *mod.Node) *Error {
 
 func errorSymbolNotDeclared(M *mod.Module, n *mod.Node) *Error {
 	return mod.NewError(M, ek.SymbolNotDeclared, n, "symbol '"+n.Lexeme.Text+"' is not declared")
+}
+
+func errorEntryPointNotFound(M *mod.Module) *Error {
+	return &Error{
+		Code:     ek.NoEntryPoint,
+		Severity: sv.Error,
+		Message:  "seu programa está com muito cabelo, todos os programas precisam de uma entrada",
+	}
 }

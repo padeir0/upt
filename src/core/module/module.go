@@ -112,6 +112,7 @@ func NewError(M *Module, t ek.ErrorKind, n *Node, message string) *Error {
 
 type Module struct {
 	FullPath string
+	Name     string
 	Root     *Node
 
 	Global *Scope
