@@ -1,0 +1,10 @@
+inteiro entrada() {
+	inteiro i;
+	para (i = 0; i < 10; i = i + 1) {
+		imprima("Donde esta la biblioteca?\n");
+	}
+	se (i != 10) {
+		retorne 2;
+	}
+	retorne 0;
+}

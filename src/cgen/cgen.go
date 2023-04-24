@@ -61,6 +61,8 @@ func genMain(ctx *context) string {
 func genFunctions(ctx *context) string {
 	output := ""
 	for _, sy := range ctx.M.Global.Symbols {
+		// precisamos resetar isso pra cada função
+		ctx.LocalMap = map[scopedSymbol]string{}
 		output += genFunc(ctx, sy) + "\n"
 	}
 	return output
@@ -75,8 +77,7 @@ func genFunc(ctx *context, sy *mod.Symbol) string {
 
 	args := []string{}
 	for _, arg := range sy.Args {
-		cArg := localIDtoC(scope, arg.Name)
-		ctx.LocalMap[arg.Name] = cArg
+		cArg := ctx.SetLocal(scope, arg.Name)
 		cType := typetoCtype(arg.T)
 		out := cType + " " + cArg
 		args = append(args, out)
@@ -137,7 +138,8 @@ func genLeia(ctx *context, scope *mod.Scope, n *mod.Node) string {
 	arg := n.Leaves[0]
 	format := typeToFormat(arg.T)
 	name := arg.Lexeme.Text
-	cName := ctx.LocalMap[name]
+	_, sc := scope.FindWithScope(name)
+	cName := ctx.FindLocal(sc, name)
 	return "scanf(\"" + format + "\", &" + cName + ");"
 }
 
@@ -190,8 +192,8 @@ func genPara(ctx *context, scope *mod.Scope, n *mod.Node) string {
 	first := genAtrib(ctx, scope, n.Leaves[0])
 	cond := genExpr(ctx, scope, n.Leaves[1])
 	second := genAtrib(ctx, scope, n.Leaves[2])
-	block := genBlock(ctx, scope, n.Leaves[2])
-	return fmt.Sprintf("for (%v; %v; %v;)\n%v",
+	block := genBlock(ctx, scope, n.Leaves[3])
+	return fmt.Sprintf("for (%v; %v; %v)\n%v",
 		first, cond, second, block)
 }
 
@@ -203,7 +205,8 @@ func genAtrib(ctx *context, scope *mod.Scope, n *mod.Node) string {
 	dest := n.Leaves[0]
 	name := dest.Lexeme.Text
 	expr := n.Leaves[1]
-	cName := ctx.LocalMap[name]
+	_, sc := scope.FindWithScope(name)
+	cName := ctx.FindLocal(sc, name)
 	return cName + " = " + genExpr(ctx, scope, expr)
 }
 
@@ -213,8 +216,7 @@ func genVarDecl(ctx *context, scope *mod.Scope, n *mod.Node) string {
 	ids := []string{}
 	for _, id := range n.Leaves[1:] {
 		name := id.Lexeme.Text
-		cName := localIDtoC(scope, name)
-		ctx.LocalMap[name] = cName
+		cName := ctx.SetLocal(scope, name)
 		ids = append(ids, cName)
 	}
 	return cType + " " + strings.Join(ids, ", ") + ";"
@@ -242,10 +244,10 @@ func genExpr(ctx *context, scope *mod.Scope, n *mod.Node) string {
 			return litToC(n)
 		case lk.Ident:
 			name := n.Lexeme.Text
-			sy := scope.Find(name)
+			sy, sc := scope.FindWithScope(name)
 			switch sy.Kind {
 			case sk.Local, sk.Argument:
-				return ctx.LocalMap[name]
+				return ctx.FindLocal(sc, name)
 			case sk.Procedure:
 				return ctx.GlobalMap[name]
 			}
@@ -327,10 +329,15 @@ func litToC(n *mod.Node) string {
 	panic("unreachable")
 }
 
+type scopedSymbol struct {
+	ScopeID int
+	Name    string
+}
+
 type context struct {
 	M           *mod.Module
 	GlobalMap   map[string]string
-	LocalMap    map[string]string
+	LocalMap    map[scopedSymbol]string
 	IndentLevel int
 }
 
@@ -338,7 +345,7 @@ func newCtx(M *mod.Module) *context {
 	return &context{
 		M:           M,
 		GlobalMap:   map[string]string{},
-		LocalMap:    map[string]string{},
+		LocalMap:    map[scopedSymbol]string{},
 		IndentLevel: 0,
 	}
 }
@@ -349,6 +356,29 @@ func (this *context) indent() string {
 		output += "\t"
 	}
 	return output
+}
+
+func (this *context) FindLocal(scope *mod.Scope, name string) string {
+	ss := scopedSymbol{
+		ScopeID: scope.ID,
+		Name:    name,
+	}
+	v, ok := this.LocalMap[ss]
+	if !ok {
+		fmt.Println(scope.ID, name)
+		panic("symbol not found")
+	}
+	return v
+}
+
+func (this *context) SetLocal(scope *mod.Scope, name string) string {
+	ss := scopedSymbol{
+		ScopeID: scope.ID,
+		Name:    name,
+	}
+	newName := localIDtoC(scope, name)
+	this.LocalMap[ss] = newName
+	return newName
 }
 
 // Não sei se as regras de escopo da linguagem alvo

@@ -1,0 +1,10 @@
+inteiro entrada() {
+	inteiro i;
+	i = 1;
+	se (i == 0) {
+		i = 3;
+	} senao {
+		i = 0;
+	}
+	retorne i;
+}

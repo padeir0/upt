@@ -99,7 +99,7 @@ func Test(folder string) []*testing.TestResult {
 				fmt.Print("\u001b[35m leaving: " + fullpath + "\u001b[0m\n")
 			}
 		} else {
-			res := testing.PartialTest(fullpath)
+			res := testing.Test(fullpath)
 			results = append(results, &res)
 			if *verbose {
 				fmt.Print(fullpath + "\t")

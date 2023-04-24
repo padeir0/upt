@@ -72,15 +72,15 @@ func Compile(file string) (string, *Error) {
 		return "", err
 	}
 	str := cgen.Gen(m)
-	ioerr := genBinary("out", str)
+	ioerr := genBinary(m.Name, str)
 	if ioerr != nil {
 		return "", ProcessFileError(ioerr)
 	}
-	return "out", nil
+	return m.Name, nil
 }
 
 func genBinary(name, str string) error {
-	f, oserr := os.CreateTemp("", "upt_*")
+	f, oserr := os.CreateTemp("", "upt_*.c")
 	if oserr != nil {
 		return oserr
 	}
@@ -89,7 +89,7 @@ func genBinary(name, str string) error {
 	if oserr != nil {
 		return oserr
 	}
-	cmd := exec.Command("gcc", f.Name(), "./"+name)
+	cmd := exec.Command("gcc", f.Name(), "-o", "./"+name)
 	_, oserr = cmd.Output()
 	if oserr != nil {
 		return oserr

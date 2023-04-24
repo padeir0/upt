@@ -86,11 +86,8 @@ func indent(n int) string {
 }
 
 var Universe *Scope = &Scope{
-	Parent: nil,
-	Symbols: map[string]*Symbol{
-		"raiz": {Name: "raiz", Kind: sk.Procedure, Type: T.T_Sqrt, Builtin: true},
-		"expo": {Name: "expo", Kind: sk.Procedure, Type: T.T_Pow, Builtin: true},
-	},
+	Parent:  nil,
+	Symbols: map[string]*Symbol{},
 }
 
 func Place(M *Module, n *Node) *Location {
@@ -154,6 +151,7 @@ func (this *Scope) String() string {
 
 func (this *Scope) Find(name string) *Symbol {
 	if this == nil {
+		fmt.Println(name)
 		panic("scope was nil")
 	}
 	v, ok := this.Symbols[name]
@@ -164,6 +162,21 @@ func (this *Scope) Find(name string) *Symbol {
 		return nil
 	}
 	return this.Parent.Find(name)
+}
+
+func (this *Scope) FindWithScope(name string) (*Symbol, *Scope) {
+	if this == nil {
+		fmt.Println(name)
+		panic("scope was nil")
+	}
+	v, ok := this.Symbols[name]
+	if ok {
+		return v, this
+	}
+	if this.Parent == nil {
+		return nil, nil
+	}
+	return this.Parent.FindWithScope(name)
 }
 
 func (this *Scope) Add(name string, sy *Symbol) {

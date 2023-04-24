@@ -1,0 +1,8 @@
+inteiro entrada() {
+	inteiro i;
+	i = 0;
+	se (i != 0) {
+		retorne 2;
+	}
+	retorne 0;
+}

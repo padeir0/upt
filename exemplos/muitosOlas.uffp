@@ -1,0 +1,9 @@
+inteiro entrada() {
+	inteiro quantidade;
+	leia(quantidade);
+
+	inteiro i;
+	para (i = 0; i < quantidade; i = i + 1) {
+		imprima("Ola :D\n");
+	}
+}

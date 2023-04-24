@@ -1,0 +1,7 @@
+inteiro entrada() {
+	inteiro i;
+	leia(i);
+	imprima("i * i = ");
+	imprima(i * i);
+	imprima("\n");
+}
