@@ -1,0 +1,5 @@
+inteiro entrada() {
+	inteiro a;
+	a = 1.0;
+	retorne 2;
+}

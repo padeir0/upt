@@ -45,6 +45,44 @@ func (this *Type) Equals(other *Type) bool {
 	panic("cannot compare " + this.String() + " with " + other.String())
 }
 
+// usage: ResultType = ConversionTable[LeftOperandType][RightOperandType]
+var ConversionTable = [][]BasicType{
+	Real: {
+		Real:      Real,
+		Inteiro:   Real,
+		Caractere: Real,
+	},
+	Inteiro: {
+		Real:      Real,
+		Inteiro:   Inteiro,
+		Caractere: Inteiro,
+	},
+	Caractere: {
+		Real:      Real,
+		Inteiro:   Inteiro,
+		Caractere: Caractere,
+	},
+}
+
+// usage: IsValid = AssignmentTable[LeftSideType][RightSideType]
+var AssignmentTable = [][]bool{
+	Real: {
+		Real:      true,
+		Inteiro:   true,
+		Caractere: true,
+	},
+	Inteiro: {
+		Real:      false,
+		Inteiro:   true,
+		Caractere: true,
+	},
+	Caractere: {
+		Real:      false,
+		Inteiro:   false,
+		Caractere: true,
+	},
+}
+
 type BasicType int
 
 const (

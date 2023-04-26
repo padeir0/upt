@@ -13,6 +13,7 @@ import (
 	lxr "upt/lexer"
 
 	"fmt"
+	"strings"
 )
 
 func Parse(filename string, contents string) (*mod.Node, *Error) {
@@ -26,7 +27,7 @@ func Parse(filename string, contents string) (*mod.Node, *Error) {
 		return nil, err
 	}
 	if l.Word.Kind != lk.EOF {
-		return nil, newError(l, ek.ExpectedEOF, "expected EOF")
+		return nil, newError(l, ek.ExpectedEOF, "esperado final do arquivo")
 	}
 	computeRanges(n)
 	return n, nil
@@ -604,14 +605,23 @@ func consume(l *lxr.Lexer) (*mod.Node, *Error) {
 	return n, nil
 }
 
+func formatLexKinds(kinds []lk.LexKind) string {
+	out := []string{}
+	for _, kind := range kinds {
+		out = append(out, kind.String())
+	}
+	return strings.Join(out, ", ")
+}
+
 func check(l *lxr.Lexer, tpList ...lk.LexKind) *Error {
 	for _, tp := range tpList {
 		if l.Word.Kind == tp {
 			return nil
 		}
 	}
+	list := formatLexKinds(tpList)
 	message := fmt.Sprintf("esperado um de %v: ao invés disso foi achado %v",
-		tpList,
+		list,
 		l.Word.Kind)
 
 	err := newError(l, ek.ExpectedSymbol, message)
@@ -628,8 +638,9 @@ func expect(l *lxr.Lexer, tpList ...lk.LexKind) (*mod.Node, *Error) {
 			return consume(l)
 		}
 	}
+	list := formatLexKinds(tpList)
 	message := fmt.Sprintf("esperado um de %v: ao invés disso foi achado %v",
-		tpList,
+		list,
 		l.Word.Kind)
 
 	err := newError(l, ek.ExpectedSymbol, message)

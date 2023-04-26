@@ -22,13 +22,14 @@ const (
 	ExpectedProd
 	NameAlreadyDefined
 	SymbolNotDeclared
-	TypeNotAssignable
+	VarNotAssignable
 	InvalidTypeForCond
 	OpUnequalTypes
 	ExpectedTypeOp
 	InvalidFileName
 	NoEntryPoint
 	WrongEntryType
+	ArgNotAssignable
 )
 
 var ErrorCodeMap = map[ErrorKind]string{
@@ -41,11 +42,12 @@ var ErrorCodeMap = map[ErrorKind]string{
 	ExpectedProd:          "E007",
 	NameAlreadyDefined:    "E008",
 	SymbolNotDeclared:     "E009",
-	TypeNotAssignable:     "E010",
+	VarNotAssignable:      "E010",
 	InvalidTypeForCond:    "E011",
 	OpUnequalTypes:        "E012",
 	ExpectedTypeOp:        "E013",
 	InvalidFileName:       "E014",
 	NoEntryPoint:          "E015",
 	WrongEntryType:        "E016",
+	ArgNotAssignable:      "E017",
 }

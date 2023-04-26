@@ -1,0 +1,8 @@
+inteiro entrada() {
+	real a;
+	a = 1 + 1;
+	se (a != 2.0) {
+		retorne 1;
+	}
+	retorne 0;
+}

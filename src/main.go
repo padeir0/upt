@@ -12,20 +12,20 @@ import (
 	"strings"
 )
 
-var lexemes = flag.Bool("lex", false, "prints the tokens")
-var ast = flag.Bool("ast", false, "prints AST output")
-var mod = flag.Bool("mod", false, "prints Typed AST output")
-var C = flag.Bool("C", false, "prints C code")
+var lexemes = flag.Bool("lex", false, "processa um arquivo e retorna os elementos lexicos")
+var ast = flag.Bool("ast", false, "processa um arquivo e retorma uma arvore sintatica abstrata")
+var mod = flag.Bool("mod", false, "processa um arquivo e retorma um módulo tipado")
+var C = flag.Bool("C", false, "processa um arquivo e emite C")
 
-var test = flag.Bool("test", false, "runs tests for all files in a folder,")
+var test = flag.Bool("test", false, "roda testes para todos os arquivos em uma pasta")
 
-var verbose = flag.Bool("v", false, "verbose tests")
+var verbose = flag.Bool("v", false, "testes verbosos")
 
 func main() {
 	flag.Parse()
 	args := flag.Args()
 	if len(args) != 1 {
-		Fatal("invalid number of arguments\n")
+		Fatal("número de argumentos invalido\n")
 	}
 	eval(args[0])
 }
@@ -122,7 +122,7 @@ func printResults(results []*testing.TestResult) {
 		}
 	}
 	fmt.Print("\n")
-	fmt.Print("failed: " + strconv.Itoa(failed) + "\n")
+	fmt.Print("falharam: " + strconv.Itoa(failed) + "\n")
 	fmt.Print("total: " + strconv.Itoa(len(results)) + "\n")
 }
 

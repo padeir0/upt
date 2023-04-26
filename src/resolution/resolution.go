@@ -375,13 +375,13 @@ func errorNameAlreadyDefined(M *mod.Module, newName *mod.Node) *Error {
 }
 
 func errorSymbolNotDeclared(M *mod.Module, n *mod.Node) *Error {
-	return mod.NewError(M, ek.SymbolNotDeclared, n, "symbol '"+n.Lexeme.Text+"' is not declared")
+	return mod.NewError(M, ek.SymbolNotDeclared, n, "simbolo '"+n.Lexeme.Text+"' não foi declarado")
 }
 
 func errorEntryPointNotFound(M *mod.Module) *Error {
 	return &Error{
 		Code:     ek.NoEntryPoint,
 		Severity: sv.Error,
-		Message:  "seu programa está com muito cabelo, todos os programas precisam de uma entrada",
+		Message:  "programa sem entrada",
 	}
 }

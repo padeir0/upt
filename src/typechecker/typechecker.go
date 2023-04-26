@@ -244,7 +244,8 @@ func checkRetorne(M *mod.Module, sy *mod.Symbol, scope *mod.Scope, n *mod.Node) 
 	if err != nil {
 		return err
 	}
-	if !sy.Type.Proc.Ret.Equals(expr.T) {
+	retType := sy.Type.Proc.Ret
+	if !T.AssignmentTable[retType.Basic][expr.T.Basic] {
 		return errorReturnTypeNotAssignable(M, expr, expr.T, sy.Type.Proc.Ret)
 	}
 	return nil
@@ -272,8 +273,10 @@ func outInt(a, b *T.Type) *T.Type {
 	return T.T_Inteiro
 }
 
-func outSame(a, b *T.Type) *T.Type {
-	return a
+func convTable(a, b *T.Type) *T.Type {
+	return &T.Type{
+		Basic: T.ConversionTable[a.Basic][b.Basic],
+	}
 }
 
 func checkExpr(M *mod.Module, scope *mod.Scope, n *mod.Node) *Error {
@@ -286,7 +289,7 @@ func checkExpr(M *mod.Module, scope *mod.Scope, n *mod.Node) *Error {
 			lk.Greater, lk.GreaterOrEquals, lk.Less, lk.LessOrEquals:
 			return checkBinExpr(M, scope, n, outInt)
 		case lk.Plus, lk.Star, lk.Division:
-			return checkBinExpr(M, scope, n, outSame)
+			return checkBinExpr(M, scope, n, convTable)
 		case lk.Remainder:
 			return checkIntBinExpr(M, scope, n)
 		case lk.Nao:
@@ -307,7 +310,7 @@ func checkExpr(M *mod.Module, scope *mod.Scope, n *mod.Node) *Error {
 				}
 				n.T = n.Leaves[0].T
 			}
-			return checkBinExpr(M, scope, n, outSame)
+			return checkBinExpr(M, scope, n, convTable)
 		case lk.IntLit, lk.RealLit, lk.CharLit:
 			n.T = litToType(n)
 			return nil
@@ -393,8 +396,8 @@ func checkCall(M *mod.Module, scope *mod.Scope, n *mod.Node) *Error {
 		if err != nil {
 			return err
 		}
-		if !tArgs[i].Equals(expr.T) {
-			return errorExpectedType(M, n, tArgs[i])
+		if !T.AssignmentTable[tArgs[i].Basic][expr.T.Basic] {
+			return errorArgNotAssignable(M, n, tArgs[i])
 		}
 	}
 	n.T = proc.T.Proc.Ret
@@ -415,24 +418,24 @@ func checkAtrib(M *mod.Module, scope *mod.Scope, n *mod.Node) *Error {
 		return err
 	}
 
-	if !sy.Type.Equals(expr.T) {
-		return errorTypeNotAssignable(M, n, expr.T, sy.Type)
+	if !T.AssignmentTable[sy.Type.Basic][expr.T.Basic] {
+		return errorVarNotAssignable(M, n, expr.T, sy.Type)
 	}
 	return nil
 }
 
-func errorTypeNotAssignable(M *mod.Module, n *mod.Node, t, u *T.Type) *Error {
+func errorVarNotAssignable(M *mod.Module, n *mod.Node, t, u *T.Type) *Error {
 	tStr := colors.MakeBlue(t.String())
 	uStr := colors.MakeBlue(u.String())
-	msg := "a expressão de tipo " + tStr + " não é atribuivel a variavel de tipo" + uStr
-	return mod.NewError(M, ek.TypeNotAssignable, n, msg)
+	msg := "a expressão de tipo " + tStr + " não é atribuivel a variavel de tipo " + uStr
+	return mod.NewError(M, ek.VarNotAssignable, n, msg)
 }
 
 func errorReturnTypeNotAssignable(M *mod.Module, n *mod.Node, t, u *T.Type) *Error {
 	tStr := colors.MakeBlue(t.String())
 	uStr := colors.MakeBlue(u.String())
-	msg := "a expressão de tipo " + tStr + " não é atribuivel ao retorno do procedimento de tipo" + uStr
-	return mod.NewError(M, ek.TypeNotAssignable, n, msg)
+	msg := "a expressão de tipo " + tStr + " não é atribuivel ao retorno do procedimento de tipo " + uStr
+	return mod.NewError(M, ek.VarNotAssignable, n, msg)
 }
 
 func errorInvalidTypeForCond(M *mod.Module, n *mod.Node, t *T.Type) *Error {
@@ -456,6 +459,13 @@ func errorExpectedType(M *mod.Module, n *mod.Node, expected *T.Type) *Error {
 	hasStr := colors.MakeBlue(n.T.String())
 	msg := "operador espera um valor do tipo " + expStr + " não " + hasStr
 	return mod.NewError(M, ek.ExpectedTypeOp, n, msg)
+}
+
+func errorArgNotAssignable(M *mod.Module, n *mod.Node, target *T.Type) *Error {
+	expStr := colors.MakeBlue(target.String())
+	hasStr := colors.MakeBlue(n.T.String())
+	msg := "o tipo " + expStr + " não é atribuivel ao argumento " + hasStr
+	return mod.NewError(M, ek.ArgNotAssignable, n, msg)
 }
 
 func errorExpectedProc(M *mod.Module, n *mod.Node) *Error {

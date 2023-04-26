@@ -311,7 +311,7 @@ func any(st *Lexer) (*lx.Lexeme, *Error) {
 			nextRune(st)
 			tp = T.Different
 		default:
-			message := fmt.Sprintf("Invalid symbol: %v", string(r))
+			message := fmt.Sprintf("simbolo invalido: %v", string(r))
 			err := NewLexerError(st, et.InvalidSymbol, message)
 			return nil, err
 		}
@@ -352,7 +352,7 @@ func any(st *Lexer) (*lx.Lexeme, *Error) {
 		nextRune(st)
 		return &lx.Lexeme{Kind: T.EOF}, nil
 	default:
-		message := fmt.Sprintf("Invalid symbol: %v", string(r))
+		message := fmt.Sprintf("simbolo invalido: %v", string(r))
 		err := NewLexerError(st, et.InvalidSymbol, message)
 		return nil, err
 	}
@@ -587,7 +587,7 @@ func parseCharLit(l *Lexer, text string) (int64, *Error) {
 		case "\\\\":
 			value = '\\'
 		default:
-			return -1, NewLexerError(l, et.InvalidSymbol, "too many characters in char")
+			return -1, NewLexerError(l, et.InvalidSymbol, "muitos caracteres no literal de caracteres")
 		}
 	}
 	return value, nil
