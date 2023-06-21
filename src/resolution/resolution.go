@@ -225,10 +225,13 @@ func resolveImprima(ctx *context, scope *mod.Scope, n *mod.Node) *Error {
 }
 
 func resolvePara(ctx *context, scope *mod.Scope, n *mod.Node) *Error {
+	var err *Error
 	initAtrib := n.Leaves[0]
-	err := resolveAtrib(ctx, scope, initAtrib)
-	if err != nil {
-		return err
+	if initAtrib != nil {
+		err = resolveAtrib(ctx, scope, initAtrib)
+		if err != nil {
+			return err
+		}
 	}
 
 	expr := n.Leaves[1]

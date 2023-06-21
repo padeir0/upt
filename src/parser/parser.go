@@ -416,7 +416,7 @@ func enquanto(l *lxr.Lexer) (*mod.Node, *Error) {
 	return kw, nil
 }
 
-// Para := 'para' '(' Atrib term Expr term Atrib ')' Bloco.
+// Para := 'para' '(' [Atrib] term Expr term Atrib ')' Bloco.
 func para(l *lxr.Lexer) (*mod.Node, *Error) {
 	lxr.Track(l, "para")
 	kw, err := expect(l, lk.Para)
@@ -427,9 +427,12 @@ func para(l *lxr.Lexer) (*mod.Node, *Error) {
 	if err != nil {
 		return nil, err
 	}
-	initAtrib, err := expectProd(l, atrib, "atribuição")
-	if err != nil {
-		return nil, err
+	var initAtrib *mod.Node
+	if l.Word.Kind != lk.Semicolon {
+		initAtrib, err = expectProd(l, atrib, "atribuição")
+		if err != nil {
+			return nil, err
+		}
 	}
 	_, err = expect(l, lk.Semicolon)
 	if err != nil {

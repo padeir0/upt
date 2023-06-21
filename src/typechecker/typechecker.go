@@ -170,9 +170,12 @@ func checkImprima(M *mod.Module, scope *mod.Scope, n *mod.Node) *Error {
 
 func checkPara(M *mod.Module, sy *mod.Symbol, scope *mod.Scope, n *mod.Node) *Error {
 	initAtrib := n.Leaves[0]
-	err := checkAtrib(M, scope, initAtrib)
-	if err != nil {
-		return err
+	var err *Error
+	if initAtrib != nil {
+		err = checkAtrib(M, scope, initAtrib)
+		if err != nil {
+			return err
+		}
 	}
 
 	expr := n.Leaves[1]

@@ -1,7 +1,7 @@
 package linearization
 
 import (
-	ir "upt/core/ir"
+	ir "github.com/padeir0/pir"
 	mod "upt/core/module"
 )
 
@@ -16,16 +16,18 @@ type context struct {
 	Sy *mod.Symbol
 
 	GlobalMap map[string]ir.SymbolID
-	LocalMap  map[scopedSymbol]ir.Value
+	LocalMap  map[scopedSymbol]ir.Operand
 }
 
 func newCtx(M *mod.Module) *context {
+	p := ir.NewProgram()
+	p.Name = M.Name
 	return &context{
 		M:         M,
-		P:         ir.NewProgram(M),
+		P:         p,
 		Sy:        nil,
 		GlobalMap: map[string]ir.SymbolID{},
-		LocalMap:  map[scopedSymbol]ir.Value{},
+		LocalMap:  map[scopedSymbol]ir.Operand{},
 	}
 }
 

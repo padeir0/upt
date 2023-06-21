@@ -241,8 +241,6 @@ loop:
 		switch r {
 		case ' ', '\t', '\n':
 			nextRune(st)
-		case '#':
-			comment(st)
 		default:
 			break loop
 		}
@@ -326,6 +324,16 @@ func any(st *Lexer) (*lx.Lexeme, *Error) {
 		}
 	case '/':
 		nextRune(st)
+		r = peekRune(st)
+		if r == '/' { // gambiarra
+			nextRune(st)
+			lineComment(st)
+			return any(st)
+		} else if r == '*' {
+			nextRune(st)
+			blockComment(st)
+			return any(st)
+		}
 		tp = T.Division
 	case '%':
 		nextRune(st)
@@ -437,17 +445,36 @@ func identifier(st *Lexer) *lx.Lexeme {
 	return genNode(st, tp)
 }
 
-func comment(st *Lexer) *Error {
-	r := nextRune(st)
-	if r != '#' {
-		panic("internal error: comment without '#'")
-	}
+func lineComment(st *Lexer) {
+	r := peekRune(st)
 	for !strings.ContainsRune("\n"+string(eof), r) {
 		nextRune(st)
 		r = peekRune(st)
 	}
 	nextRune(st)
-	return nil
+	ignore(st)
+}
+
+func blockComment(st *Lexer) {
+	r := peekRune(st)
+	for {
+		if r == '*' {
+			nextRune(st)
+			r = peekRune(st)
+			if r == '/' {
+				nextRune(st)
+				ignore(st)
+				return
+			}
+		} else if r == eof {
+			nextRune(st)
+			ignore(st)
+			return
+		} else {
+			nextRune(st)
+		}
+		r = peekRune(st)
+	}
 }
 
 func strLit(st *Lexer) *lx.Lexeme {

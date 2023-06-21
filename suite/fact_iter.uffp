@@ -1,0 +1,21 @@
+inteiro entrada() {
+	se (fact(2) != 2) {
+		retorne 1;
+	}
+	se (fact(3) != 6) {
+		retorne 1;
+	}
+	se (fact(4) != 24) {
+		retorne 1;
+	}
+	retorne 0;
+}
+
+inteiro fact(inteiro a) {
+	inteiro out;
+	out = 1;
+	para (; a > 0; a = a - 1) {
+		out = out * a;
+	}
+	retorne out;
+}

@@ -134,7 +134,7 @@ Senao := 'senao' Bloco.
 
 Enquanto := 'enquanto' '(' Expr ')' Bloco.
 
-Para := 'para' '(' Atrib term Expr term Atrib ')' Bloco.
+Para := 'para' '(' [Atrib] term Expr term Atrib ')' Bloco.
 
 ExprList := Expr {',' Expr}.
 Expr := AndExpr {'ou' AndExpr}.

@@ -1,0 +1,8 @@
+inteiro entrada() {
+	imprima("Olá, Imundo!\n"); // comentário
+	/*
+		isso é um comentário
+	*/
+	imprima("Hello, Worldo!\n");
+	retorne 0;
+}

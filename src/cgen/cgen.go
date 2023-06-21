@@ -189,7 +189,10 @@ func genEnquanto(ctx *context, scope *mod.Scope, n *mod.Node) string {
 
 func genPara(ctx *context, scope *mod.Scope, n *mod.Node) string {
 	// para := {atrib, cond, atrib, block}
-	first := genAtrib(ctx, scope, n.Leaves[0])
+	first := ""
+	if n.Leaves[0] != nil {
+		first = genAtrib(ctx, scope, n.Leaves[0])
+	}
 	cond := genExpr(ctx, scope, n.Leaves[1])
 	second := genAtrib(ctx, scope, n.Leaves[2])
 	block := genBlock(ctx, scope, n.Leaves[3])
