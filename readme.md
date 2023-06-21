@@ -92,8 +92,13 @@ mas pode ser resolvida com um truque no lexer.
 
 ### Comentários <a name="comentarios"/>
 
-Comentários começam com `#` e terminam com uma quebra de linha.
-Eles são desconsiderados durante a compilação.
+A linguagem segue o estilo de comentários de C, ou seja,
+existem dois tipos de comentários:
+
+ - Os que começam com `//` e terminam com uma quebra de linha.
+ - Os que começam com `/*` e terminam com `*/`
+
+Ambos são desconsiderados durante a compilação.
 
 ## Elementos Gramaticais <a name="elementosgramaticais"/>
 
