@@ -1,0 +1,26 @@
+inteiro entrada() {
+exLerMaiorMenor();
+}
+
+exLerMaiorMenor()
+{
+    inteiro n,i,d;
+    real s;
+
+    s = 1;
+    d = 0;
+    imprima(" Digite o valor de n: ");
+    leia(n);
+
+    para (i = 1; i <= n; i = i + 1)
+    {
+        s= (s + i)/(n - d);
+        d = d + 1;
+        imprima(s);
+        imprima("\n");
+    }
+
+    imprima("S é igual a: ");
+    imprima(s);
+
+}

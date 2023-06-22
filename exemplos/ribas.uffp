@@ -1,0 +1,32 @@
+inteiro entrada() {
+	exLerMaiorMenor();
+}
+
+exLerMaiorMenor() {
+	inteiro i, x, maior, menor;
+
+	imprima("insira um valor: ");
+	leia(x);
+
+	maior = x;
+	menor = x;
+
+	para (i = 1; i < 10; i=i+1) { // nota que agora são só 9 números
+		imprima("insira um valor: ");
+		leia(x);
+
+		se (x >= maior) {
+			maior = x;
+		}
+
+		se (x <= menor) {
+			menor = x;
+		}
+	}
+
+	imprima("o maior número é:");
+	imprima(maior);
+	imprima(" e o menor é:");
+	imprima(menor);
+	retorne 0;
+}

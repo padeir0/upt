@@ -364,9 +364,6 @@ func checkBinExpr(M *mod.Module, scope *mod.Scope, n *mod.Node, rule typeRule) *
 	}
 	aT := n.Leaves[0].T
 	bT := n.Leaves[1].T
-	if !aT.Equals(bT) {
-		return errorInvalidOperationUnequalTypes(M, n)
-	}
 	n.T = rule(aT, bT)
 	return nil
 }

@@ -2,4 +2,5 @@ inteiro entrada() {
 	inteiro x;
 	x = 1 + 2.0;
 	imprima(x);
+	retorne 0;
 }

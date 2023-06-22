@@ -1,0 +1,10 @@
+inteiro entrada() {
+	inteiro y;
+	real x;
+	x = 0.0;
+	y = 0;
+
+	x = y + x;
+	imprima(x);
+	retorne 0;
+}
