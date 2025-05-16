@@ -1,5 +1,6 @@
 inteiro entrada() {
 	inteiro quantidade;
+	imprima("Quantos olas vc quer? ");
 	leia(quantidade);
 
 	inteiro i;
